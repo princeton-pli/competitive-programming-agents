@@ -1,0 +1,29 @@
+#!/usr/bin/env python3
+
+import argparse
+
+try:
+    from sweagent import TOOLS_DIR
+except ImportError:
+    pass
+else:
+    import sys
+
+    default_lib = TOOLS_DIR / "defaults" / "lib"
+    assert default_lib.is_dir()
+    sys.path.append(str(default_lib))
+    sys.path.append(str(TOOLS_DIR / "registry" / "lib"))
+
+from edit import edit
+
+
+def get_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("search", type=str)
+    parser.add_argument("replace", type=str)
+    parser.add_argument("replace_all", type=bool, nargs="?", default=False)
+    return parser
+
+
+if __name__ == "__main__":
+    edit(**vars(get_parser().parse_args()))

@@ -1,0 +1,89 @@
+#!/usr/bin/env python3
+
+import argparse
+import datetime
+import json
+import os
+import requests
+import time
+
+API_KEY = os.getenv("CF_API_KEY")
+
+
+def get_parser():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("contest_id", type=str)
+    parser.add_argument("problem_index", type=str)
+    parser.add_argument("source_type", type=str)
+    parser.add_argument("source_text_filename", type=str)
+    return parser
+
+
+def submit(contest_id, problem_index, source_type, source_text_filename):
+    url = "https://codeforces.com/api/v2/submissions"
+
+    data = {
+        "contestId": contest_id,
+        "problemIndex": problem_index,
+        "sourceType": source_type,
+        "sourceText": open(source_text_filename).read(),
+    }
+
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+    }
+
+    response = requests.post(url, headers=headers, json=data)
+    print("Got the following response from the submission API:")
+    print(response.json())
+    return response.json()["napiSubmissionId"]
+
+
+def check_submission_status(submission_id):
+    url = "https://codeforces.com/api/v2/submissionReports"
+
+    data = {
+        "napiSubmissionIds": submission_id,
+        "details": True,
+    }
+
+    headers = {
+        "Authorization": f"Bearer {API_KEY}",
+    }
+
+    retry_ladder = [15, 15, 30, 30, 60, 60, 120, 120]
+    retry_index = 0
+    final_retry_interval = 240
+
+    while True:
+        response = requests.post(url, headers=headers, json=data)
+        submission_reports = response.json()["napiSubmissionReports"]
+        assert len(submission_reports) == 1
+        submission_report = submission_reports[0]
+        if submission_report["status"] != "COMPLETED":
+            # Use retry ladder, then settle at final interval
+            if retry_index < len(retry_ladder):
+                wait_time = retry_ladder[retry_index]
+                retry_index += 1
+            else:
+                wait_time = final_retry_interval
+
+            print(f"Submission not completed yet. Waiting {wait_time} seconds before retry...")
+            time.sleep(wait_time)
+            continue
+
+        if submission_report["verdict"] == "OK":
+            print("<<SWE_AGENT_SUBMISSION_OK>>")
+            return
+        print("The verdict is not OK, here is the full report:")
+        print(json.dumps(submission_report, indent=4))
+        return
+
+
+def main(contest_id, problem_index, source_type, source_text_filename):
+    submission_id = submit(contest_id, problem_index, source_type, source_text_filename)
+    check_submission_status(submission_id)
+
+
+if __name__ == "__main__":
+    main(**vars(get_parser().parse_args()))

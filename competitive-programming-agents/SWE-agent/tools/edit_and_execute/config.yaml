@@ -1,0 +1,29 @@
+tools:
+  edit_and_execute:
+    signature: |
+      edit_and_execute <path> <content> [<run_command>] [<compile_command>]
+    docstring: >
+      Create or edit a file with the given content and compile and execute it.
+      The file will be created in the current working directory.
+      NEVER USE cin in programs you run with this tool
+    arguments:
+      - name: path
+        type: string
+        description: "the path to the file to edit"
+        required: true
+      - name: content
+        type: string
+        description: "the content to write to the file"
+        required: true
+      - name: run_command
+        type: string
+        description: "the command to run the program. By default this is ./FILENAME.out"
+        required: false
+        default: ""
+        argument_format: "--run_command {{value}}"
+      - name: compile_command
+        type: string
+        description: "the command to compile the program. By default this is g++ -O2 -std=c++17 -DLOCAL -o FILENAME.out FILENAME.cpp"
+        required: false
+        default: "g++ -O2 -std=c++17 -DLOCAL -o FILENAME.out FILENAME.cpp"
+        argument_format: "--compile_command {{value}}"

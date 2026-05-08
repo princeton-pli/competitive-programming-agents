@@ -1,0 +1,61 @@
+agent:
+  templates:
+    system_template: |-
+      SETTING: You are a competitive programmer solving a CodeForces contest.
+
+    instance_template: |-
+      We're currently solving the following coding challenge:
+      {{problem_statement}}
+
+      INSTRUCTIONS:
+
+      Your solution should be added to the directory '/klieret__swea-cf-base-repo/'.
+      Currently, the only file in this directory is '/klieret__swea-cf-base-repo/suggested_template.cpp/' with a template for your solution.
+      However, you can also create additional files in this directory.
+
+      At every step, please include a SINGLE function call.
+
+      There are several helpful tools available, but you're free to use any other bash commands you want (e.g. find, grep, cat, ls, cd) in addition to the special commands listed above.
+      However, the environment does NOT support interactive session commands (e.g. python, vim), so please do not invoke them.
+
+      Now, you're going to solve this problem on your own. Your terminal session has started and you're in the directory '/klieret__swea-cf-base-repo/'.
+      You can use any bash commands or the special interface to help you.
+
+      IMPORTANT TIPS:
+
+      1. Use C++ for your solution. Use `g++ -O2 -std=c++17 -DLOCAL -o res.out` for compilation, and `./res.out` to execute. There is no need to specify the input file (it is already handled by the freopen call in the template).
+      1a. FOR INPUT, USE `input.txt`! DO NOT USE STDIN FOR TESTING YOUR PROGRAMS.
+      2. For efficiency, chain your compilation and execution commands (`g++ ... && echo "..." > input.txt && ./res.out` etc.).
+      2a. If you're making smaller edits, you can also chain your edits: `str_replace_editor ... && g++ ... && echo "..." "> input.txt && ./res.out`
+      3. Once you have a solution candidate, call the `submit_to_cf` tool to submit your solution to CodeForces
+      3a. There's no need to test before you run `submit_to_cf`
+      3b. However, if `submit_to_cf` returns a verdict that is not OK, it might be very helpful to start creating additional test cases to understand failure mode.
+
+      YOU CANNOT GIVE UP BEFORE YOU RECEIVED AN OK VERDICT! IF YOU ARE STUCK, STILL TRY SOMETHING (e.g. try special cases)!
+    next_step_template: |-
+      OBSERVATION:
+      {{observation}}
+    next_step_no_output_template: |-
+      Your command ran successfully and did not produce any output.
+  tools:
+    execution_timeout: 900
+    bundles:
+      - path: tools/registry
+      - path: tools/edit_anthropic
+      - path: tools/submit_to_cf
+    parse_function:
+      type: function_calling
+    propagate_env_variables:
+      - "CF_API_KEY"
+  history_processors:
+    - type: last_n_observations
+      n: 5
+    - type: cache_control
+      last_n_messages: 2
+  model:
+    # name: o3
+    # name: claude-sonnet-4-20250514
+    per_instance_cost_limit: 2.0
+    max_output_tokens: 64000
+    # top_p: null  # for o3
+    # temperature: 1.  # for o3

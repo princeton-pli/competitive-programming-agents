@@ -1,0 +1,27 @@
+tools:
+  submit_to_cf:
+    signature: |
+      submit_to_cf <contest_id> <problem_index> <source_type> <source_text_filename>
+    docstring: >
+      Submit the current solution file to the given contest and problem.
+
+      You will get an answer with the submission id, which you will later use to get the results.
+
+      There are only two supported source types: 'python.pypy3' and 'cpp.gcc14-64-msys2-g++23'. In the first case, the source text filename should be a python file ending with '.py', and in the second case it should be a cpp file ending with '.cpp'.
+    arguments:
+      - name: contest_id
+        type: string
+        description: "the contest id"
+        required: true
+      - name: problem_index
+        type: string
+        description: "the problem index"
+        required: true
+      - name: source_type
+        type: string
+        description: "the source type"
+        required: true
+      - name: source_text_filename
+        type: string
+        description: "the source text filename"
+        required: true

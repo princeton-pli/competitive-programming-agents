@@ -1,0 +1,16 @@
+#!/usr/bin/env python3
+
+import argparse
+
+from edit import insert
+
+
+def get_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("text", type=str)
+    parser.add_argument("line", type=int, nargs="?", default=None)
+    return parser
+
+
+if __name__ == "__main__":
+    insert(**vars(get_parser().parse_args()))

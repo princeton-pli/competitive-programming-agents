@@ -1,0 +1,11 @@
+tools:
+  get_cf_submission_results:
+    signature: |
+      get_cf_submission_results <submission_id>
+    docstring: >
+      Get the results of the given submission id.
+    arguments:
+      - name: submission_id
+        type: string
+        description: "the submission id"
+        required: true

@@ -1,0 +1,126 @@
+#!/usr/bin/env python3
+
+"""
+Simple file creation and compilation interface.
+"""
+
+import argparse
+import subprocess
+from pathlib import Path
+
+# Global compile command template - filename will be replaced
+COMPILE = "g++ -O2 -std=c++17 -DLOCAL -o {output} {input}"
+
+
+def create_file(path: str, content: str) -> None:
+    """Create or overwrite a file with the given content."""
+    file_path = Path(path)
+    print("4")
+    file_path.parent.mkdir(parents=True, exist_ok=True)
+    print("3")
+    file_path.write_text(content, encoding="utf-8")
+    print(f"File created: {file_path}")
+
+
+def get_compile_command(input_file: str) -> str:
+    """Get the compile command with filenames replaced."""
+    input_path = Path(input_file)
+    output_file = input_path.stem + ".out"
+    return COMPILE.format(input=input_file, output=output_file)
+
+
+def run_compilation(compile_cmd: str) -> tuple[bool, str]:
+    """Run the compilation command and return success status and output file."""
+    print(f"Running compilation: {compile_cmd}")
+    print("-" * 50)
+
+    try:
+        result = subprocess.run(compile_cmd.split(), capture_output=True, text=True, check=False, timeout=10)
+
+        # Show compilation output
+        if result.stdout:
+            print("STDOUT:")
+            print(result.stdout)
+        if result.stderr:
+            print("STDERR:")
+            print(result.stderr)
+
+        if result.returncode == 0:
+            print("✓ Compilation successful!")
+            # Extract output filename from compile command
+            output_file = compile_cmd.split("-o")[1].split()[0]
+            return True, output_file
+        else:
+            print(f"✗ Compilation failed with return code {result.returncode}")
+            return False, ""
+
+    except subprocess.TimeoutExpired as e:
+        print("✗ Compilation timed out after 10 seconds")
+        if e.stdout:
+            print("STDOUT (partial):")
+            print(e.stdout)
+        if e.stderr:
+            print("STDERR (partial):")
+            print(e.stderr)
+        return False, ""
+    except Exception as e:
+        print(f"✗ Error during compilation: {e}")
+        return False, ""
+
+
+def run_executable(executable: str, run_command: str) -> None:
+    """Run the compiled executable and show all output."""
+    if run_command == "":
+        run_command = f"./{executable}"
+    print(f"\nRunning executable: {run_command}")
+    print("-" * 50)
+
+    try:
+        result = subprocess.run([run_command], capture_output=True, text=True, check=False, timeout=60)
+
+        if result.stdout:
+            print("STDOUT:")
+            print(result.stdout)
+        if result.stderr:
+            print("STDERR:")
+            print(result.stderr)
+
+        print(f"Program finished with return code: {result.returncode}")
+
+    except subprocess.TimeoutExpired as e:
+        print("✗ Program execution timed out after 60 seconds. NOTE: If you're reading from a file, make sure that you actually create and populate it.")
+        if e.stdout:
+            print("STDOUT (partial):")
+            print(e.stdout)
+        if e.stderr:
+            print("STDERR (partial):")
+            print(e.stderr)
+    except Exception as e:
+        print(f"✗ Error running executable: {e}")
+
+
+def main() -> None:
+    print("edit and execute running")
+    parser = argparse.ArgumentParser(description="Create a file with specified content, compile and execute it")
+    parser.add_argument("path", type=str, help="Path where the file should be created")
+    parser.add_argument("content", type=str, help="Content to write to the file")
+    parser.add_argument("--run_command", type=str, help="Command to run the program", default="")
+    parser.add_argument("--compile_command", type=str, help="Command to compile the program", default="")
+    args = parser.parse_args()
+    print("1")
+
+    # Create the file with content
+    create_file(args.path, args.content)
+    print("2")
+
+    # Get and run compilation command
+    compile_cmd = args.compile_command if args.compile_command else get_compile_command(args.path)
+    success, output_file = run_compilation(compile_cmd)
+
+    # If compilation succeeded, run the executable
+    if success and output_file:
+        run_executable(output_file, args.run_command)
+
+
+if __name__ == "__main__":
+    main()
