@@ -1,0 +1,65 @@
+system_template: "You are an expert at competitive coding challenges."
+
+instance_template: |
+  Please solve the following problem 
+
+  <problem_statement>
+  {{ problem_statement }}
+  </problem_statement>
+
+  Here is some template for your solution
+
+  <template>
+  #include <bits/stdc++.h>
+
+  using namespace std;
+
+  #define ve vector
+  #define pa pair
+  #define tu tuple
+  #define mp make_pair
+  #define pb push_back
+  #define sz(a) ((int)(a).size())
+
+  #define ARG4(_1,_2,_3,_4,...) _4
+
+  #define forn3(i,l,r) for (int i = int(l); i < int(r); ++i)
+  #define forn2(i,n) forn3 (i, 0, n)
+  #define forn(...) ARG4(__VA_ARGS__, forn3, forn2) (__VA_ARGS__)
+
+  #define ford3(i,l,r) for (int i = int(r) - 1; i >= int(l); --i)
+  #define ford2(i,n) ford3 (i, 0, n)
+  #define ford(...) ARG4(__VA_ARGS__, ford3, ford2) (__VA_ARGS__)
+
+  const long double eps = 1e-9;
+  const int inf = (1 << 30) - 1;
+  const long long inf64 = (1LL << 62) - 1;
+
+  template<typename T> inline T abs (T x) {return x < 0 ? -x : x;}
+
+  double EPS = 1e-9;
+  long long INF = LLONG_MAX;
+
+  // ...
+
+  int main() {
+      ios::sync_with_stdio(0);
+      cin.tie(0);
+
+  #ifdef LOCAL
+      freopen("input.txt", "r", stdin);
+  #endif
+
+      // ...
+
+      return 0;
+  }
+  </template>
+
+  Your answer should include be formatted as follows
+
+  Thinking process
+
+  <code>
+  Your C++ code here
+  </code> 
