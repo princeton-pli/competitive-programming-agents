@@ -1,6 +1,8 @@
-# CF-Scraping: Codeforces Benchmark for LLM Coding Agents
+# When Independent Sampling Outperforms Agentic Reasoning
 
 Tooling to evaluate LLM coding agents on Codeforces problems. The repo packages problem statements into [SWE-bench](https://www.swebench.com/)-style instances, runs **one-shot LLM baselines** that submit code straight to the Codeforces judge, and **launches SWE-agent** for agentic baselines using a bundled fork.
+
+![Overview](overview.png)
 
 ## Repository Structure
 
@@ -136,7 +138,7 @@ python exps/launch_oneshot.py
 
 ## Running SWE-Agent
 
-The bundled fork ships with four CP-tuned config files at [`SWE-agent/config/`](SWE-agent/config/): `cp_claude.yaml`, `cp_o3.yaml`, `cp_kilian.yaml`, `cp_kilian_edit_execute.yaml`.
+The bundled fork ships with four CP-tuned config files at [`SWE-agent/config/`](SWE-agent/config/): `cp_claude.yaml`, `cp_o3.yaml`.
 
 ### Single batch run
 
@@ -170,22 +172,3 @@ python exps/launch_probability_estimation.py
 ```
 
 Both honor the optional `SWE_AGENT_USER` env var (defaults to `getpass.getuser()`) when locating trajectory directories.
-
-## Analysis & Reporting
-
-After a batch finishes, the helpers under the repo root parse trajectories and produce paper-ready figures/tables:
-
-- [`report.py`](report.py) — LaTeX tables (per-division success), cumulative-solved-vs-cost / vs-queries plots, probability-estimation figures.
-- [`analyze_agent_trajectories.py`](analyze_agent_trajectories.py) — exit-status counts, per-instance cost and API-call totals.
-- [`analyze_trajectories_llm_judge.py`](analyze_trajectories_llm_judge.py) — calls an LLM judge over each trajectory; classifies failures.
-- [`analyze_weaknesses.py`](analyze_weaknesses.py) — aggregates the judge output into a top-N weakness report.
-
-```bash
-python report.py                      # writes PDFs under ../overleaf/pics by default
-python analyze_trajectories_llm_judge.py --base-dir agent_trajectories --output traj_analysis.json
-python analyze_weaknesses.py traj_analysis.json -o weakness_report.txt
-```
-
-## Acknowledgements
-
-Built on top of [SWE-agent](https://github.com/SWE-agent/SWE-agent) (Princeton NLP & Stanford). Codeforces problem data is fetched via the [Codeforces API](https://codeforces.com/api/help).
