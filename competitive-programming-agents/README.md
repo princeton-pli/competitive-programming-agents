@@ -2,7 +2,7 @@
 
 Tooling to evaluate LLM coding agents on Codeforces problems. The repo packages problem statements into [SWE-bench](https://www.swebench.com/)-style instances, runs **one-shot LLM baselines** that submit code straight to the Codeforces judge, and **launches SWE-agent** for agentic baselines using a bundled fork.
 
-![Overview](overview.png)
+<p align="center"><img src="overview.png" alt="Overview" width="400"></p>
 
 ## Repository Structure
 
